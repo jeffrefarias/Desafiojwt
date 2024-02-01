@@ -25,7 +25,7 @@ app.post("/login", async (req,res)  => {
         const UserPassword = await verificarCredenciales(email)
         console.log("UserPassword devuelto de verfificar credenciales: ", UserPassword )
         console.log("password recibido del body: ", password)
-        const validarPassword = await bcrypt.compare(password,UserPassword);
+        const validarPassword = await bcrypt.compare(password.trim(),UserPassword.trim());
         console.log(validarPassword);
          // validacion contraseña
          if (validarPassword == false) {
