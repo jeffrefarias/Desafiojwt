@@ -25,9 +25,8 @@ const verificarCredenciales = async (email) => {
 
 const Add = async (email, password,rol,lenguage) => {
     try {
-        let passwordEncriptada = bcrypt.hashSync(password) 
       const consulta = "INSERT INTO usuarios (email,password,rol,lenguage) VALUES ($1, $2, $3,$4)";
-      const values = [email, passwordEncriptada,rol,lenguage];
+      const values = [email, password,rol,lenguage];
       const result = await pool.query(consulta, values);
       console.log("Usuario agregado");
       return result.rows[0];
