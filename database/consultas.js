@@ -1,5 +1,4 @@
 import pkg from 'pg';
-import bcrypt from 'bcryptjs'
 
 // import format from 'pg-format';
 
@@ -12,11 +11,15 @@ const pool = new Pool({
     allowExitOnIdle: true
 });
 
-const verificarCredenciales = async(email,password) => {
-    const consulta = "select * from usuarios where email = $1 and password = $2"
-    const values = [email,password]
-    const result = await pool.query(consulta,values)
-    console.log(result)
+
+const verificarCredenciales = async (email) => {
+  const consulta = "SELECT * FROM usuarios WHERE email = $1"
+  const values = [email]
+  // destructuring para obtener rowCount y userDB desde propiedad rows el objeto que contiene info BD
+  const { rowCount, rows: [userDB]  } = await pool.query(consulta, values)
+  // respuesta de funcion para caso de no existir credenciales en BD o sea no existe el email
+  if (!rowCount) throw { code: 404, message: "No se encontró ningún usuario con estas credenciales" }
+  return userDB.password // objeto sacado del array rows
 }
 
 

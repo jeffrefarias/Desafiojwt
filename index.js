@@ -4,6 +4,7 @@ import express from "express";
 import cors from 'cors'
 import {reporteRuta, validaToken} from './middleware.js'
 import {verificarCredenciales,Add,Get} from './database/consultas.js'
+import bcrypt from 'bcryptjs'
 
 
 const app = express();
@@ -18,18 +19,24 @@ app.listen(PORT, () => {
 app.post("/login", async (req,res)  => {
     try {
         const {email,password} = req.body
-        console.log("Contraseña antes del verificar credenciales " + password);
         if(!email || !password) {
-            throw { message: "email y la contraseña requeridos"}
+            throw { code: 400, message: "Email y contraseña son requeridos."};
         }
-        const UserPassword = await verificarCredenciales(email,password)
-        console.log("Contraseña despues del verificar credenciales " + UserPassword);
-        // const validarPassword = await bcrypt.compare(password,UserPassword);
+        const UserPassword = await verificarCredenciales(email)
+        console.log("UserPassword devuelto de verfificar credenciales: ", UserPassword )
+        console.log("password recibido del body: ", password)
+        const validarPassword = await bcrypt.compare(password,UserPassword);
+        console.log(validarPassword);
+         // validacion contraseña
+         if (validarPassword == false) {
+            throw { code: 401, message: "Contraseña incorrecta." };
+        }  
         const token = jwt.sign({email}, "az_AZ")
         res.send(token)
     } catch (error) {
-        console.log("Hay error de credenciales");
-        res.status(error.code || 500).send(error)
+        console.error("Error durante el inicio de sesión:", error);
+        const statusCode = error.code || 500;
+        res.status(statusCode).send({ error: error.message })
     }
 });
 
