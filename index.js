@@ -24,7 +24,7 @@ app.post("/login", async (req, res) => {
         }
         const UserPassword = await verificarCredenciales(email)
         const validarPassword = await bcrypt.compare(password.trim(), UserPassword.trim());
-        console.log(validarPassword);
+        
         // validacion contraseña
         if (validarPassword == false) {
             throw { code: 401, message: "Contraseña incorrecta." };
